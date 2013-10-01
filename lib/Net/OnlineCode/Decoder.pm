@@ -16,7 +16,7 @@ require Exporter;
 @ISA = qw(Net::OnlineCode Exporter);
 @EXPORT_OK = qw();
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub new {
 
@@ -67,6 +67,9 @@ sub accept_check_block {
   # print "Decoder: Adding check block to graph\n";
   my $check_node = $self->{graph}->add_check_block($composite_blocks);
 
+  # short-circuit check blocks that don't have any unsolved neighbours
+  return (0) unless $check_node;
+
   # print "Decoder: Resolving graph\n";
   my ($done, @which) = ($self->{graph}->resolve($check_node));
 
@@ -83,6 +86,11 @@ sub accept_check_block {
 sub xor_list {
   my $self = shift;
   my $i = shift;
+
+  return ($self->{graph}->xor_list($i));
+
+  # algorithm will no longer return just composite blocks
+
 
   my $coblocks = $self->get_coblocks;
 
